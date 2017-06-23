@@ -1,11 +1,26 @@
 class ExquisiteCorpus
-  REQUIRED_PARAMS = [:output_dir, :inputs]
+  attr_reader :results
+
+  REQUIRED_ARGS = [:inputs]
+
   def initialize(options = {})
-    REQUIRED_PARAMS.each do |required_param|
-      unless options[required_param]
-        throw "#{required_param} is required"
+    check_for_required_args(options)
+    @inputs  = options[:inputs]
+    @results = []
+  end
+
+  def parse!
+    
+  end
+
+private
+
+  def check_for_required_args(args)
+    REQUIRED_ARGS.each do |required_arg|
+      unless args[required_arg]
+        throw "#{required_arg} is required"
       end
     end
-
   end
+
 end
