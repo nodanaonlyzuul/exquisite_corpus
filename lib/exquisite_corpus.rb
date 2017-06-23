@@ -1,4 +1,4 @@
-require 'httparty'
+require 'open-uri'
 require 'feedjira'
 require 'nokogiri'
 
@@ -15,11 +15,23 @@ class ExquisiteCorpus
 
   def parse!
     @inputs.each do |input|
+      response = open(input[:source]).read
       if input[:type] == "feed"
+
+        feed = Feedjira::Feed.parse(response)
+
+        feed.entries.each do |entry|
+          stripped_content = Nokogiri::HTML(entry.content).text()
+          @results << ExquisiteCorpus::Result.new(
+            source:  input[:source],
+            content: stripped_content
+          )
+        end
+
       else
-        body = HTTParty.get(input[:source]).body
-        stripped_content = Nokogiri::HTML(body).css('body')
+        stripped_content = Nokogiri::HTML(response).css('body')
         # stripped_content.css("script, form, input, style").remove()
+        
         @results << ExquisiteCorpus::Result.new(
           source:  input[:source],
           content: stripped_content.text()
