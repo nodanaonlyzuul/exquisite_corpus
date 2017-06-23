@@ -4,8 +4,8 @@ class ExquisiteCorpus::Result
 
   def initialize(options = {})
     @source = options[:source]
-    @content = nil
+    @content = options[:content]
     @exported_as
   end
-  
+
 end

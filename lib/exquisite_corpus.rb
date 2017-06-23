@@ -1,3 +1,7 @@
+require 'httparty'
+require 'feedjira'
+require 'nokogiri'
+
 class ExquisiteCorpus
   attr_reader :results
 
@@ -10,7 +14,18 @@ class ExquisiteCorpus
   end
 
   def parse!
-    
+    @inputs.each do |input|
+      if input[:type] == "feed"
+      else
+        body = HTTParty.get(input[:source]).body
+        stripped_content = Nokogiri::HTML(body).css('body')
+        # stripped_content.css("script, form, input, style").remove()
+        @results << ExquisiteCorpus::Result.new(
+          source:  input[:source],
+          content: stripped_content.text()
+        )
+      end
+    end
   end
 
 private

@@ -18,8 +18,11 @@ describe ExquisiteCorpus do
 
   it "calling parse! populates the results" do
     exquisite_corpus = ExquisiteCorpus.new(inputs: [
-      {type: '', name: 'example.com', source: 'http://example.com'}
+      {type: 'static', name: 'example.com', source: 'http://example.com'}
     ])
+
+    exquisite_corpus.parse!
+    expect(exquisite_corpus.results.length).to eq(1)
   end
 
   it "responds to export_to"
@@ -27,6 +30,8 @@ describe ExquisiteCorpus do
   it "will throw an exception without :inputs" do
     expect(Proc.new {ExquisiteCorpus.new(output_dir: "foo")}).to raise_error()
   end
+
+  it "can only use 'static' and 'feed' as :type options of the :inputs option"
 
   describe "parsing a feed" do
     it "requires a URL"
