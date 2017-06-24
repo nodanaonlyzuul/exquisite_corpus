@@ -59,7 +59,6 @@ private
   end
 
   def strip_except_options(document, css_selectors)
-    
     css_selectors.each do |css_selector|
       document.search(css_selector).remove
     end
