@@ -6,6 +6,7 @@ class ExquisiteCorpus
   attr_reader :results
 
   REQUIRED_ARGS = [:inputs]
+  STRIPPED_TAGS = %w{script form input style}
 
   def initialize(options = {})
     check_for_required_args(options)
@@ -21,20 +22,23 @@ class ExquisiteCorpus
         feed = Feedjira::Feed.parse(response)
 
         feed.entries.each do |entry|
-          stripped_content = Nokogiri::HTML(entry.content).text()
+          content = Nokogiri::HTML(entry.content).css('body')
+
           @results << ExquisiteCorpus::Result.new(
             source:  input[:source],
-            content: stripped_content
+            content: content.text()
           )
+
         end
 
       else
-        stripped_content = Nokogiri::HTML(response).css('body')
+        response = Nokogiri::HTML(response).css('body')
+        strip_tags!(response, input)
         # stripped_content.css("script, form, input, style").remove()
-        
+
         @results << ExquisiteCorpus::Result.new(
           source:  input[:source],
-          content: stripped_content.text()
+          content: response.text()
         )
       end
     end
@@ -47,6 +51,17 @@ private
       unless args[required_arg]
         throw "#{required_arg} is required"
       end
+    end
+  end
+
+  def strip_tags!(document, input)
+    strip_except_options(document, STRIPPED_TAGS.push(input[:except]).compact.flatten)
+  end
+
+  def strip_except_options(document, css_selectors)
+    
+    css_selectors.each do |css_selector|
+      document.search(css_selector).remove
     end
   end
 
