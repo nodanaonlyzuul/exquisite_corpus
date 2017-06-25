@@ -16,7 +16,7 @@ describe ExquisiteCorpus do
   it "calling parse! populates the results" do
     VCR.use_cassette('example.com') do
       exquisite_corpus = ExquisiteCorpus.new(inputs: [
-        {type: 'static', name: 'example.com', source: 'http://example.com'}
+        {type: 'static', source: 'http://example.com'}
       ])
 
       exquisite_corpus.parse!
@@ -27,7 +27,7 @@ describe ExquisiteCorpus do
   it "calling parse! when given a feed will download multiple items" do
     VCR.use_cassette('haph2rah.wordpress.com') do
       exquisite_corpus = ExquisiteCorpus.new(inputs: [
-        {type: 'feed', name: 'example.com', source: 'https://haph2rah.wordpress.com/feed/'}
+        {type: 'feed', source: 'https://haph2rah.wordpress.com/feed/'}
       ])
 
       exquisite_corpus.parse!
