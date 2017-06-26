@@ -1,6 +1,10 @@
+require 'rubygems'
 require 'open-uri'
 require 'feedjira'
 require 'nokogiri'
+require 'fileutils'
+
+require File.join(__dir__, 'result')
 
 class ExquisiteCorpus
   attr_reader :results
@@ -21,6 +25,16 @@ class ExquisiteCorpus
     end
   end
 
+  def export_to(path)
+    unless @results.empty?
+      path = File.expand_path(path)
+      FileUtils.mkdir_p(path)
+      @results.each do |result|
+        File.write(File.join(path, result.exported_as), result.content)
+      end
+    end
+  end
+
 private
 
   def parse_feed(input, response)
@@ -29,7 +43,7 @@ private
 
       feed.entries.each do |entry|
         content = Nokogiri::HTML(entry.content).css('body')
-        @results << ExquisiteCorpus::Result.new(
+        @results << Result.new(
           source:  input[:source],
           content: content.text()
         )
@@ -44,11 +58,12 @@ private
       response = Nokogiri::HTML(response).css('body')
       strip_tags!(response, input)
 
-      @results << ExquisiteCorpus::Result.new(
+      @results << Result.new(
         source:  input[:source],
         content: response.text()
       )
-    rescue
+    rescue Exception => e
+      require 'pry'; binding.pry
       false
     end
   end

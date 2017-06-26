@@ -1,7 +1,7 @@
 require 'uri'
 require 'digest'
 
-class ExquisiteCorpus::Result
+class Result
 
   attr_reader :source, :content
 

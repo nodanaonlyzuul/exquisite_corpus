@@ -1,7 +1,8 @@
 # Exquisite Corpus
 
 Scrape sites, feeds, & files.
-Turns it into 'just text' so you can feed them to the AI gawd.
+Turn them to 'just text' so you can feed them to the AI gawd.  
+**You can parse any type of feed supported by [feedjira](http://feedjira.com/).**
 
 ## Installation
 
@@ -21,7 +22,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+
+### Basic
+
+```ruby
+
+parser = ExquisiteCorpus.new(inputs: [
+    {source: 'http://example.com'},
+    {source: 'https://example.com/feed'},
+    {source: '/path/to/local/file.html'}
+])
+
+parser.parse!
+
+# A plain-text of example.com's markup
+parser.results.first.content
+
+# Want all the text?
+all_content = parser.results.map(&:content)
+
+# Export a directory of text files
+parser.export_to('/a/new/directory')
+```
+
+### Don't Scrape Dumb Stuff
+
+This library **refuses to scrape** `script`, `form`, `input`, `style` tags.
+Want to exclude more?:
+
+```ruby
+parser = ExquisiteCorpus.new(inputs: [
+    {source: 'http://example.com', except: ['array', 'of', 'cssSelectors']}
+])
+```
 
 ## Development
 
