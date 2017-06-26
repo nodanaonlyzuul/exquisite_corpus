@@ -17,34 +17,41 @@ class ExquisiteCorpus
   def parse!
     @inputs.each do |input|
       response = open(input[:source]).read
-      if input[:type] == "feed"
-
-        feed = Feedjira::Feed.parse(response)
-
-        feed.entries.each do |entry|
-          content = Nokogiri::HTML(entry.content).css('body')
-
-          @results << ExquisiteCorpus::Result.new(
-            source:  input[:source],
-            content: content.text()
-          )
-
-        end
-
-      else
-        response = Nokogiri::HTML(response).css('body')
-        strip_tags!(response, input)
-        # stripped_content.css("script, form, input, style").remove()
-
-        @results << ExquisiteCorpus::Result.new(
-          source:  input[:source],
-          content: response.text()
-        )
-      end
+      parse_feed(input, response) || parse_html(input, response)
     end
   end
 
 private
+
+  def parse_feed(input, response)
+    begin
+      feed = Feedjira::Feed.parse(response)
+
+      feed.entries.each do |entry|
+        content = Nokogiri::HTML(entry.content).css('body')
+        @results << ExquisiteCorpus::Result.new(
+          source:  input[:source],
+          content: content.text()
+        )
+      end
+    rescue
+      false
+    end
+  end
+
+  def parse_html(input, response)
+    begin
+      response = Nokogiri::HTML(response).css('body')
+      strip_tags!(response, input)
+
+      @results << ExquisiteCorpus::Result.new(
+        source:  input[:source],
+        content: response.text()
+      )
+    rescue
+      false
+    end
+  end
 
   def check_for_required_args(args)
     REQUIRED_ARGS.each do |required_arg|

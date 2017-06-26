@@ -16,7 +16,7 @@ describe ExquisiteCorpus do
   it "calling parse! populates the results" do
     VCR.use_cassette('example.com') do
       exquisite_corpus = ExquisiteCorpus.new(inputs: [
-        {type: 'static', source: 'http://example.com'}
+        {source: 'http://example.com'}
       ])
 
       exquisite_corpus.parse!
@@ -27,7 +27,7 @@ describe ExquisiteCorpus do
   it "calling parse! when given a feed will download multiple items" do
     VCR.use_cassette('haph2rah.wordpress.com') do
       exquisite_corpus = ExquisiteCorpus.new(inputs: [
-        {type: 'feed', source: 'https://haph2rah.wordpress.com/feed/'}
+        {source: 'https://haph2rah.wordpress.com/feed/'}
       ])
 
       exquisite_corpus.parse!
@@ -39,7 +39,7 @@ describe ExquisiteCorpus do
     path_to_html = File.join(@resourece_dir, 'cool-web-site.html')
 
     exquisite_corpus = ExquisiteCorpus.new(inputs: [
-      {type: 'static', source: path_to_html}
+      {source: path_to_html}
     ])
 
     exquisite_corpus.parse!
@@ -54,7 +54,7 @@ describe ExquisiteCorpus do
       path_to_html = File.join(@resourece_dir, 'divs-and-ps.html')
 
       exquisite_corpus = ExquisiteCorpus.new(inputs: [
-        {type: 'static', source: path_to_html, except: ['p']}
+        {source: path_to_html, except: ['p']}
       ])
 
       exquisite_corpus.parse!
